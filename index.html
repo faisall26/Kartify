@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Cartify · Fresh Finds, Best Prices</title>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+      scroll-behavior: smooth;
+    }
+
+    /* mobile-first container */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* header / shop identity */
+    .shop-header {
+      background: white;
+      padding: 16px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .shop-title h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1e2b3a;
+      line-height: 1.2;
+    }
+    .shop-title .tagline {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #6c7a8a;
+      margin-top: 2px;
+    }
+    .owner-email {
+      font-size: 0.85rem;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 40px;
+      color: #2c3e50;
+    }
+    .owner-email i {
+      margin-right: 6px;
+      color: #e67e22;
+    }
+
+    /* hero */
+    .hero {
+      width: 100%;
+      background: linear-gradient(0deg, rgba(0, 20, 30, 0.3), rgba(0, 0, 0, 0.2)), url('https://i.ibb.co/0jQJStJx/pexels-asphotography-230544.jpg') center/cover no-repeat;
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      border-radius: 0 0 30px 30px;
+      margin-bottom: 24px;
+    }
+    .hero-content {
+      max-width: 80%;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(3px);
+      padding: 28px 22px;
+      border-radius: 40px;
+    }
+    .hero-content h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    .btn-shopnow {
+      background: #f5b342;
+      border: none;
+      color: #1e2b3a;
+      padding: 14px 40px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(245, 180, 66, 0.4);
+      transition: transform 0.1s ease, background 0.2s;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-shopnow:hover {
+      background: #ffb82e;
+      transform: scale(1.02);
+    }
+
+    /* product carousel section */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 30px 0 16px 0;
+      padding: 0 6px;
+    }
+    .section-head h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #1f2a3f;
+    }
+    .carousel-hint {
+      color: #6b7c93;
+      font-size: 0.9rem;
+    }
+    .carousel-hint i {
+      margin-left: 5px;
+    }
+
+    /* horizontal scroll carousel (mobile friendly) */
+    .product-carousel {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 8px 2px 20px 2px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+    .product-carousel::-webkit-scrollbar {
+      height: 5px;
+    }
+    .product-carousel::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 10px;
+    }
+
+    /* product card */
+    .product-card {
+      flex: 0 0 auto;
+      width: 170px;
+      background: white;
+      border-radius: 28px;
+      padding: 16px 12px 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .product-card img {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 24px;
+      background: #f8fafc;
+      margin-bottom: 12px;
+      border: 1px solid #f1f1f1;
+    }
+    .product-card h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 8px 0 4px;
+      color: #152b3c;
+    }
+    .product-price {
+      font-weight: 700;
+      color: #e67e22;
+      font-size: 1.1rem;
+      margin: 5px 0 12px;
+    }
+    .add-btn {
+      background: #1e2b3a;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 10px 0;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 5px 8px rgba(0,0,0,0.1);
+    }
+    .add-btn i {
+      font-size: 0.9rem;
+    }
+    .add-btn:hover {
+      background: #2b3d52;
+    }
+
+    /* floating cart */
+    .floating-cart {
+      position: fixed;
+      bottom: 25px;
+      right: 20px;
+      background: #1e2b3a;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 1000;
+      transition: 0.15s;
+      border: 2px solid white;
+    }
+    .floating-cart i {
+      font-size: 1.8rem;
+    }
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f5b342;
+      color: #1e2b3a;
+      font-weight: 800;
+      font-size: 0.9rem;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      border: 2px solid white;
+    }
+
+    /* cart drawer / modal */
+    .cart-drawer {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 320px;
+      max-width: 90vw;
+      background: white;
+      border-radius: 36px;
+      padding: 24px 18px;
+      box-shadow: 0 30px 50px rgba(0,20,30,0.3);
+      z-index: 1001;
+      display: none;
+      border: 1px solid rgba(255,215,120,0.4);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .cart-drawer.show {
+      display: block;
+    }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #152b3c;
+    }
+    .close-drawer {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #7b8a9b;
+    }
+    .cart-items-list {
+      list-style: none;
+      margin-bottom: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .cart-items-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 0.95rem;
+    }
+    .cart-items-list .item-name {
+      font-weight: 500;
+    }
+    .cart-items-list .item-remove {
+      color: #b00020;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      background: none;
+      border: none;
+    }
+
+    /* customer details form */
+    .customer-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .customer-details input {
+      padding: 14px 18px;
+      border: 1px solid #e0e7ef;
+      border-radius: 50px;
+      font-size: 1rem;
+      background: #f9fcff;
+    }
+    .send-order-btn {
+      background: #25D366;
+      color: white;
+      font-weight: 700;
+      border: none;
+      padding: 16px 10px;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 6px 12px rgba(37, 211, 102, 0.3);
+    }
+    .send-order-btn i {
+      font-size: 1.3rem;
+    }
+    .send-order-btn:hover {
+      background: #20b859;
+    }
+
+    /* whatsapp floating button */
+    .wa-float {
+      position: fixed;
+      bottom: 100px;
+      left: 20px;
+      background: #25D366;
+      width: 60px;
+      height: 60px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+      z-index: 999;
+      transition: 0.2s;
+      border: 3px solid white;
+    }
+    .wa-float a {
+      color: white;
+      font-size: 2.2rem;
+    }
+
+    /* responsive touches */
+    @media (min-width: 768px) {
+      .product-card {
+        width: 200px;
+      }
+      .hero-content h2 {
+        font-size: 4rem;
+      }
+    }
+    .footer-note {
+      text-align: center;
+      padding: 40px 10px 20px;
+      color: #7f8c8d;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Shop header -->
+<div class="shop-header">
+  <div class="shop-title">
+    <h1>Cartify</h1>
+    <div class="tagline">Fresh Finds, Best Prices</div>
+  </div>
+  <div class="owner-email"><i class="fa-regular fa-envelope"></i> fk2018825@gmail.com</div>
+</div>
+
+<!-- Hero section -->
+<section class="hero">
+  <div class="hero-content">
+    <h2>Fresh. Smart.<br>Yours.</h2>
+    <button class="btn-shopnow" id="shopNowBtn"><i class="fa-solid fa-bag-shopping"></i> Shop Now</button>
+  </div>
+</section>
+
+<!-- Products Carousel -->
+<div class="container">
+  <div class="section-head">
+    <h3>Popular picks</h3>
+    <span class="carousel-hint">swipe → <i class="fa-solid fa-arrow-right"></i></span>
+  </div>
+
+  <div class="product-carousel" id="productCarousel">
+    <!-- product cards will be populated by js, but we include static data structure -->
+  </div>
+</div>
+
+<!-- floating cart icon -->
+<div class="floating-cart" id="cartIcon">
+  <i class="fa-solid fa-cart-shopping"></i>
+  <span class="cart-count" id="cartCount">0</span>
+</div>
+
+<!-- cart drawer -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="drawer-header">
+    <span>🛒 Your cart</span>
+    <button class="close-drawer" id="closeDrawer">&times;</button>
+  </div>
+  <ul class="cart-items-list" id="cartItemsList">
+    <li style="justify-content: center; color: #aaa;">Cart is empty</li>
+  </ul>
+  <div class="customer-details">
+    <input type="text" id="customerName" placeholder="Your name *" value="John Doe">
+    <input type="tel" id="customerPhone" placeholder="Phone number *" value="+91 99999 99999">
+  </div>
+  <button class="send-order-btn" id="sendOrderBtn"><i class="fa-brands fa-whatsapp"></i> Send Order via Email</button>
+  <p style="font-size:0.75rem; margin-top:10px; color:#8a9bb0;"><i class="fa-regular fa-envelope"></i> order will be sent to shop owner</p>
+</div>
+
+<!-- WhatsApp floating button -->
+<div class="wa-float">
+  <a href="https://wa.me/9999999999?text=Hi%20Cartify!%20I%20have%20a%20question." target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+</div>
+
+<!-- footer spacer -->
+<div class="footer-note">
+  <i class="fa-regular fa-heart"></i> everyday fresh · Cartify
+</div>
+
+<script>
+  (function() {
+    // 1. initialize EmailJS (public key - free trial OK)
+    emailjs.init('YOUR_PUBLIC_KEY'); // ⚠️ Replace with actual free public key from EmailJS
+    // For demo, we use a placeholder – but the function will show alert with order data.
+    // In real usage, you need to create service and template. We'll simulate success.
+
+    // product data with images
+    const products = [
+      { name: 'Juicy Watermelon', img: 'https://i.ibb.co/39YSLFH/watermelon-min-jpg.webp', price: '₹80' },
+      { name: 'Aparna F1', img: 'https://i.ibb.co/0prR4wWS/2674-Aparna-F1.jpg', price: '₹220' },
+      { name: 'RX3 Styler', img: 'https://i.ibb.co/KzSjgqzD/RX3-thumb-2.jpg', price: '₹1899' },
+      { name: 'JBL Tune 520BT', img: 'https://i.ibb.co/CK0KxWLg/jbltune520bt-min-500x500.webp', price: '₹2999' },
+      { name: 'Classic Chrono', img: 'https://i.ibb.co/twqcGdD4/Watches-LP-carousel-Style-Mens-classic.jpg', price: '₹3499' }
+    ];
+
+    const carousel = document.getElementById('productCarousel');
+    // render products
+    products.forEach((prod, idx) => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img src="${prod.img}" alt="${prod.name}" loading="lazy">
+        <h4>${prod.name}</h4>
+        <div class="product-price">${prod.price}</div>
+        <button class="add-btn" data-index="${idx}" data-name="${prod.name}"><i class="fa-solid fa-cart-plus"></i> Add</button>
+      `;
+      carousel.appendChild(card);
+    });
+
+    // cart state
+    let cart = [];  // each item = { name: string, index: number }
+
+    // DOM elements
+    const cartIcon = document.getElementById('cartIcon');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const cartCountSpan = document.getElementById('cartCount');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const sendOrderBtn = document.getElementById('sendOrderBtn');
+    const customerName = document.getElementById('customerName');
+    const customerPhone = document.getElementById('customerPhone');
+    const shopNowBtn = document.getElementById('shopNowBtn');
+
+    // update cart UI (counter + drawer list)
+    function updateCartUI() {
+      // count
+      cartCountSpan.innerText = cart.length;
+
+      // build list html
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = '<li style="justify-content: center; color: #aaa;">Cart is empty</li>';
+      } else {
+        let html = '';
+        cart.forEach((item, idx) => {
+          html += `<li>
+            <span class="item-name">${item.name}</span>
+            <button class="item-remove" data-cartindex="${idx}"><i class="fa-solid fa-trash-can"></i></button>
+          </li>`;
+        });
+        cartItemsList.innerHTML = html;
+        // attach remove events
+        document.querySelectorAll('.item-remove').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const cartIdx = e.currentTarget.getAttribute('data-cartindex');
+            if (cartIdx !== null) {
+              cart.splice(cartIdx, 1);
+              updateCartUI();
+            }
+            e.stopPropagation();
+          });
+        });
+      }
+    }
+
+    // add to cart handler
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const name = e.currentTarget.getAttribute('data-name');
+        cart.push({ name: name });
+        updateCartUI();
+        // Optional: tiny feedback
+        e.currentTarget.style.background = '#2ecc71';
+        setTimeout(() => {
+          e.currentTarget.style.background = '#1e2b3a';
+        }, 150);
+      });
+    });
+
+    // toggle drawer
+    cartIcon.addEventListener('click', () => {
+      cartDrawer.classList.toggle('show');
+    });
+    closeDrawer.addEventListener('click', () => {
+      cartDrawer.classList.remove('show');
+    });
+    // click outside to close (optional, but nice)
+    window.addEventListener('click', (e) => {
+      if (!cartDrawer.contains(e.target) && !cartIcon.contains(e.target) && cartDrawer.classList.contains('show')) {
+        cartDrawer.classList.remove('show');
+      }
+    });
+
+    // scroll to products
+    shopNowBtn.addEventListener('click', () => {
+      document.getElementById('productCarousel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // send order via EmailJS (simulated with alert, because public key needed)
+    sendOrderBtn.addEventListener('click', () => {
+      const name = customerName.value.trim();
+      const phone = customerPhone.value.trim();
+      if (!name || !phone) {
+        alert('Please fill name and phone');
+        return;
+      }
+      if (cart.length === 0) {
+        alert('Cart is empty');
+        return;
+      }
+
+      // build items list string
+      const itemsList = cart.map((item, i) => `${i+1}. ${item.name}`).join('\n');
+      const orderDetails = `Customer: ${name}\nPhone: ${phone}\n\nItems:\n${itemsList}`;
+
+      // In a real implementation you would call emailjs.send()
+      // But to keep it fully functional without requiring the user to get a key,
+      // we show an alert with the order and clear cart? plus send a copy to owner email.
+      // We'll simulate a successful send.
+      
+      // For demonstration: show summary and "send" to console & alert
+      console.log('ORDER SENT via EmailJS to fk2018825@gmail.com');
+      console.log(orderDetails);
+      
+      // Simulate EmailJS send (template params)
+      // emailjs.send('service_xxx', 'template_xxx', {
+      //   to_email: 'fk2018825@gmail.com',
+      //   from_name: name,
+      //   phone: phone,
+      //   order_list: itemsList,
+      // }).then(...)
+
+      // Since no actual EmailJS key is embedded, we show a success message + email preview
+      alert(`✅ ORDER SIMULATED (EmailJS integration ready)\n\nYour order would be sent to fk2018825@gmail.com\n\n${orderDetails}`);
+      
+      // optionally clear cart after "send"
+      cart = [];
+      updateCartUI();
+      cartDrawer.classList.remove('show');
+    });
+
+    // initial update
+    updateCartUI();
+  })();
+</script>
+
+<!-- note: EmailJS requires a real public key to work without alert simulation.
+     This demo uses simulated success. To truly send email, replace 'YOUR_PUBLIC_KEY' and implement send.
+     All functionality present: floating cart, add, remove, customer fields, send action. -->
+</body>
+</html>
