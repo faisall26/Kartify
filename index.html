@@ -342,7 +342,7 @@
       cursor: pointer;
       transition: background 0.2s;
       box-shadow: 0 6px 12px rgba(37, 211, 102, 0.3);
-    }
+    emailjs.init('yfUGBbPvh3L5H5eAp');
     .send-order-btn i {
       font-size: 1.3rem;
     }
@@ -392,7 +392,37 @@
 <body>
 
 <!-- Shop header -->
-<div class="shop-header">
+sendOrderBtn.addEventListener('click', () => {
+  const name = customerName.value.trim();
+  const phone = customerPhone.value.trim();
+  
+  if (!name || !phone) {
+    alert('Please fill name and phone');
+    return;
+  }
+  if (cart.length === 0) {
+    alert('Cart is empty');
+    return;
+  }
+
+  const itemsList = cart.map((item, i) => `${i+1}. ${item.name}`).join('\n');
+  
+  emailjs.send('service_cartify', 'template_mj3pfzw', {
+    name: name,
+    phone: phone,
+    items: itemsList
+  }).then(
+    function(response) {
+      alert('✅ Order successfully sent to fk2018825@gmail.com!');
+      cart = [];
+      updateCartUI();
+      cartDrawer.classList.remove('show');
+    },
+    function(error) {
+      alert('❌ Error: ' + JSON.stringify(error));
+    }
+  );
+});
   <div class="shop-title">
     <h1>Cartify</h1>
     <div class="tagline">Fresh Finds, Best Prices</div>
